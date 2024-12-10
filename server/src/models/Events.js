@@ -1,5 +1,8 @@
 import { Schema } from "mongoose";
 
+//TODO - MAKE SURE TO ADD VIRTUAL FOR TICKETS
+
+
 export const EventsSchema = new Schema(
     {
         creatorId: { type: Schema.ObjectId, ref: 'Account', required: true },

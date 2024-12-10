@@ -2,6 +2,9 @@ import { dbContext } from "../db/DbContext"
 
 class EventsService {
 
+
+    //TODO - MAKE SURE TO ADD VIRTUAL FOR TICKETS
+
     async cancelEvent(userId, eventId) {
         const eventById = await this.getEventById(eventId)
         if (eventById.creatorId != userId) { throw new Error('You Cannot Delete An Event You Did Not Create. Make Sure You Are Signed In!') }
