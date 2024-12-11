@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref } from 'vue';
+import { onBeforeUnmount, onMounted, ref } from 'vue';
 import { loadState, saveState } from '../utils/Store.js';
 import Login from './Login.vue';
 
@@ -15,13 +15,29 @@ function toggleTheme() {
   saveState('theme', theme.value)
 }
 
+
+const screenWidth = ref(window.innerWidth);
+
+function updateScreenWidth() {
+  screenWidth.value = window.innerWidth;
+}
+
+onMounted(() => {
+  window.addEventListener('resize', updateScreenWidth);
+});
+
+onBeforeUnmount(() => {
+  window.removeEventListener('resize', updateScreenWidth);
+});
+
 </script>
 
 <template>
   <nav class="navbar navbar-expand-sm navbar-dark bg-dark px-3">
     <router-link class="navbar-brand d-flex" :to="{ name: 'Home' }">
-      <div class="d-flex flex-column align-items-center">
-        <img alt="logo" src="/img/cw-logo.png" height="45" />
+      <div class="d-flex flex-column align-items-center ms-1">
+        <img v-if="screenWidth >= 576" class="mt-5" alt="logo" src="../assets/img/giraffe.gif" height="125"
+          id="navImage" />
       </div>
     </router-link>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarText"
@@ -30,13 +46,7 @@ function toggleTheme() {
     </button>
     <div class="collapse navbar-collapse" id="navbarText">
       <ul class="navbar-nav me-auto">
-        <li>
-          <router-link :to="{ name: 'About' }" class="btn text-success lighten-30 selectable text-uppercase">
-            About
-          </router-link>
-        </li>
       </ul>
-      <!-- LOGIN COMPONENT HERE -->
       <div>
         <button class="btn text-light" @click="toggleTheme"
           :title="`Enable ${theme == 'light' ? 'dark' : 'light'} theme.`">
@@ -57,6 +67,7 @@ a:hover {
   text-transform: uppercase;
 }
 
+
 .navbar-nav .router-link-exact-active {
   border-bottom: 2px solid var(--bs-success);
   border-bottom-left-radius: 0;
@@ -66,6 +77,10 @@ a:hover {
 @media screen and (min-width: 576px) {
   nav {
     height: 64px;
+  }
+
+  .d-none {
+    display: flex;
   }
 }
 </style>
