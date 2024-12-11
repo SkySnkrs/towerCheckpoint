@@ -1,6 +1,10 @@
 import { dbContext } from "../db/DbContext"
 
 class EventsService {
+    async getEventComments(eventId) {
+        const comments = await dbContext.Comments.find({ eventId: eventId }).populate('creator')
+        return comments
+    }
 
 
     async getEventTickets(eventId) {
