@@ -4,6 +4,17 @@ import { AppState } from "@/AppState.js"
 import { TowerEvent } from "@/models/TowerEvent.js"
 
 class EventService {
+
+    async getEventsByCategory(category) {
+        await this.getEvents()
+        if (category === "all") {
+            return;
+        }
+        const eventData = AppState.events.filter((event) => event.type.toLowerCase() === category.toLowerCase());
+        AppState.events = eventData;
+        logger.log(`[Get Events By Category ${category}]`, AppState.events)
+    }
+
     async getEvents() {
         AppState.events = []
         const response = await api.get('/api/events')

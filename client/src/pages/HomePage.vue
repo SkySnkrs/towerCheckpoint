@@ -48,7 +48,18 @@ async function getEvents() {
   }
 }
 
+async function selectCategory(category) {
+  try {
+    this.selectedCategory = category.toLowerCase();
+    await eventService.getEventsByCategory(this.selectedCategory)
+  }
+  catch (error) {
+    Pop.error(error);
+  }
+}
+
 const events = computed(() => AppState.events)
+
 </script>
 
 <template>
@@ -93,36 +104,41 @@ const events = computed(() => AppState.events)
   <section class="container event-body" style="">
     <div v-if="checkWidth" class="p-3">
       <h2>Explore Top Categories:</h2>
-      <div class=" row justify-content-around mt-4" :class="marginStart">
-        <div class=" p-3 col-sm-5 col-6 text-center card card-event-categories" role="button" selectable>
+      <div class=" row justify-content-around mt-4 fw-bold font-capitalize" :class="marginStart">
+        <div @click="selectCategory('All')" class=" p-3 col-sm-5 col-6 text-center card card-event-categories"
+          role="button" selectable>
           <div>
             <i class="mdi fs-3 text-success mdi-infinity"></i>
           </div>
-          <h5 class="fw-bold font-capitalize">All</h5>
+          <h5>All</h5>
         </div>
-        <div class=" col-sm-5 col-6  p-3 text-center card card-event-categories" role="button" selectable>
+        <div @click="selectCategory('concert')" class=" col-sm-5 col-6  p-3 text-center card card-event-categories"
+          role="button" selectable>
           <div>
             <i class="mdi fs-3 text-success mdi-guitar-acoustic"></i>
           </div>
-          <h5 class="fw-bold font-capitalize">Concert</h5>
+          <h5>Concert</h5>
         </div>
-        <div class=" col-sm-5 col-6 p-3 text-center card card-event-categories" role="button" selectable>
+        <div @click="selectCategory('convention')" class=" col-sm-5 col-6 p-3 text-center card card-event-categories"
+          role="button" selectable>
           <div>
             <i class="mdi fs-3 text-success mdi-account-group"></i>
           </div>
-          <h5 class="fw-bold font-capitalize">Convention</h5>
+          <h5>Convention</h5>
         </div>
-        <div class=" col-sm-5 col-6 p-3 text-center card card-event-categories" role="button" selectable>
+        <div @click="selectCategory('sport')" class=" col-sm-5 col-6 p-3 text-center card card-event-categories"
+          role="button" selectable>
           <div>
             <i class="mdi fs-3 text-success mdi-football-helmet"></i>
           </div>
-          <h5 class="fw-bold font-capitalize">Sport</h5>
+          <h5>Sport</h5>
         </div>
-        <div class=" col-sm-5 col-6 p-3 text-center card card-event-categories" role="button" selectable>
+        <div @click="selectCategory('digital')" class=" col-sm-5 col-6 p-3 text-center card card-event-categories"
+          role="button" selectable>
           <div>
             <i class="mdi fs-3 text-success mdi-desktop-classic"></i>
           </div>
-          <h5 class="fw-bold font-capitalize">Digital</h5>
+          <h5>Digital</h5>
         </div>
         <div class=" col-sm-5 col-6 p-3">
 
@@ -131,45 +147,51 @@ const events = computed(() => AppState.events)
     </div>
     <div v-else class="p-3">
       <h2>Explore Top Categories:</h2>
-      <div class=" row justify-content-around mt-4" :class="marginStart">
-        <div class=" p-3 col-2 text-center card card-event-categories" role="button" selectable>
+      <div class=" row justify-content-around mt-4 fw-bold font-capitalize" :class="marginStart">
+        <div @click="selectCategory('all')" class=" p-3 col-lg-2 text-center card card-event-categories" role="button"
+          selectable>
           <div>
             <i class="mdi fs-3 text-success mdi-infinity"></i>
           </div>
-          <h5 class="fw-bold font-capitalize">All</h5>
+          <h5>All</h5>
         </div>
-        <div class="col-lg-2   p-3 text-center card card-event-categories" role="button" selectable>
+        <div @click="selectCategory('concert')" class="col-lg-2   p-3 text-center card card-event-categories"
+          role="button" selectable>
           <div>
             <i class="mdi fs-3 text-success mdi-guitar-acoustic"></i>
           </div>
-          <h5 class="fw-bold font-capitalize">Concert</h5>
+          <h5>Concert</h5>
         </div>
-        <div class="col-lg-2 p-3 text-center card card-event-categories" role="button" selectable>
+        <div @click="selectCategory('convention')" class="col-lg-2 p-3 text-center card card-event-categories"
+          role="button" selectable>
           <div>
             <i class="mdi fs-3 text-success mdi-account-group"></i>
           </div>
-          <h5 class="fw-bold font-capitalize">Convention</h5>
+          <h5>Convention</h5>
         </div>
-        <div class="col-lg-2 p-3 text-center card card-event-categories" role="button" selectable>
+        <div @click="selectCategory('sport')" class="col-lg-2 p-3 text-center card card-event-categories" role="button"
+          selectable>
           <div>
             <i class="mdi fs-3 text-success mdi-football-helmet"></i>
           </div>
-          <h5 class="fw-bold font-capitalize">Sport</h5>
+          <h5>Sport</h5>
         </div>
-        <div class="col-lg-2 p-3 text-center card card-event-categories" role="button" selectable>
+        <div @click="selectCategory('digital')" class="col-lg-2 p-3 text-center card card-event-categories"
+          role="button" selectable>
           <div>
             <i class="mdi fs-3 text-success mdi-desktop-classic"></i>
           </div>
-          <h5 class="fw-bold font-capitalize">Digital</h5>
+          <h5>Digital</h5>
         </div>
+
 
       </div>
     </div>
   </section>
-  <section class="container ">
+  <section class="container mb-3">
     <div class="row mt-4">
       <h2>Explore Upcoming Events:</h2>
-      <div v-for="event in events" v-bind:key="event.id" class="col-sm-4">
+      <div v-for="event in events" v-bind:key="event.id" class="col-lg-4 col-sm-6 col-12 mt-4 mb-2">
         <EventCard :eventProp="event" />
       </div>
     </div>
@@ -244,6 +266,16 @@ section>div {
 
 .event-body {
   margin-top: 20rem;
+}
+
+.card-event-categories {
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.card-event-categories:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 @media screen and (max-width: 992px) {

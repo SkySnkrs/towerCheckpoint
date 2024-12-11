@@ -1,3 +1,4 @@
+
 export class TowerEvent {
     constructor(data) {
         this.id = data.id,
@@ -9,8 +10,23 @@ export class TowerEvent {
             this.capacity = data.capacity,
             this.startDate = new Date(data.startDate),
             this.isCanceled = data.isCanceled,
-            this.type = [data.type],
+            this.type = data.type,
             this.creator = data.creator,
             this.ticketCount = data.ticketCount
+    }
+
+    get EventDate() {
+        return this.startDate.toLocaleString('en-us', { month: "short", day: "2-digit" })
+    }
+
+    get EventCategory() {
+        const iconMapping = {
+            concert: 'mdi-guitar-acoustic',
+            convention: 'mdi-account-group',
+            sport: 'mdi-football-helmet',
+            digital: 'mdi-desktop-classic'
+        };
+
+        return iconMapping[this.type] || 'mdi-help-circle';
     }
 }
