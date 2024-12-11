@@ -3,7 +3,12 @@ import { dbContext } from "../db/DbContext"
 class EventsService {
 
 
-    //TODO - MAKE SURE TO ADD VIRTUAL FOR TICKETS
+    async getEventTickets(eventId) {
+        const eventTickets = await dbContext.Tickets.find({ eventId: eventId }).populate('profile')
+        return eventTickets;
+    }
+
+
 
     async cancelEvent(userId, eventId) {
         const eventById = await this.getEventById(eventId)
@@ -28,19 +33,19 @@ class EventsService {
     }
 
     async getEventById(eventId) {
-        const eventById = await dbContext.Events.findById(eventId).populate('creator')
+        const eventById = await dbContext.Events.findById(eventId).populate('creator ticketCount')
         return eventById
     }
 
     async getEvents() {
 
-        const events = await dbContext.Events.find().populate('creator')
+        const events = await dbContext.Events.find().populate('creator ticketCount')
         return events
     }
 
     async postEvents(data) {
         const events = await dbContext.Events.create(data)
-        await events.populate('creator')
+        await events.populate('creator ticketCount')
         return events
     }
 

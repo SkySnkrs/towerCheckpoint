@@ -1,8 +1,5 @@
 import { Schema } from "mongoose";
 
-//TODO - MAKE SURE TO ADD VIRTUAL FOR TICKETS
-
-
 export const EventsSchema = new Schema(
     {
         creatorId: { type: Schema.ObjectId, ref: 'Account', required: true },
@@ -14,16 +11,27 @@ export const EventsSchema = new Schema(
         startDate: { type: Date, required: true },
         isCanceled: { type: Boolean, required: true, default: false },
         type: {
-            type: String, enum: [
-                'concert', 'convention', 'sport', 'digital', 'N/A'
-            ], default: 'N/A'
+            type: String,
+            enum: ['concert', 'convention', 'sport', 'digital', 'N/A'],
+            default: 'N/A'
         }
     },
-    { timestamps: true, toJSON: { virtuals: true } })
+    {
+        timestamps: true,
+        toJSON: { virtuals: true }
+    }
+);
 
 EventsSchema.virtual('creator', {
     localField: 'creatorId',
     ref: 'Account',
     foreignField: '_id',
     justOne: true
-})
+});
+
+EventsSchema.virtual('ticketCount', {
+    ref: 'Tickets',
+    localField: '_id',
+    foreignField: 'eventId',
+    count: true
+});

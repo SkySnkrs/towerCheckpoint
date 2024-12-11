@@ -3,11 +3,11 @@ import { Schema } from "mongoose";
 export const TicketsSchema = new Schema(
     {
         accountId: { type: Schema.ObjectId, ref: 'Account', required: true },
-        eventId: { type: Schema.ObjectId, ref: 'Events', required: true }
+        eventId: { type: Schema.ObjectId, ref: 'Events', required: true },
     },
     { timestamps: true, toJSON: { virtuals: true } })
 
-TicketsSchema.virtual('account', {
+TicketsSchema.virtual('profile', {
     localField: 'accountId',
     ref: 'Account',
     foreignField: '_id',
