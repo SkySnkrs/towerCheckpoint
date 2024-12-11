@@ -4,6 +4,11 @@ import { AppState } from "@/AppState.js"
 import { TowerEvent } from "@/models/TowerEvent.js"
 
 class EventService {
+    async getEventPage(id) {
+        const response = await api.get(`/api/events/${id}`)
+        const event = new TowerEvent(response.data)
+        AppState.selectedEvent = event
+    }
 
     async getEventsByCategory(category) {
         await this.getEvents()

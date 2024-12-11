@@ -1,6 +1,7 @@
 <script setup>
 import { TowerEvent } from '@/models/TowerEvent';
-import { logger } from '@/utils/Logger';
+import { eventService } from '@/services/EventService';
+import Pop from '@/utils/Pop';
 
 
 defineProps({
@@ -8,7 +9,12 @@ defineProps({
 })
 
 async function getEventPage(id) {
-    logger.log(id)
+    try {
+        await eventService.getEventPage(id)
+    }
+    catch (error) {
+        Pop.error(error);
+    }
 }
 
 </script>

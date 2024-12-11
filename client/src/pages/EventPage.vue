@@ -1,10 +1,14 @@
 <script setup>
+import { AppState } from '@/AppState';
+import { computed } from 'vue';
 
+const event = computed(() => AppState.selectedEvent)
 </script>
 
 
 <template>
-    <p>HELLO</p>
+    <p>{{ event.name }}</p>
+    <p>{{ event.coverImg }}</p>
 </template>
 
 
