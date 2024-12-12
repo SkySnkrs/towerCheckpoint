@@ -1,18 +1,22 @@
 <script setup>
 import { AppState } from '@/AppState';
+import Login from '@/components/Login.vue';
+import { commentService } from '@/services/CommentService';
 import { eventService } from '@/services/EventService';
 import { ticketService } from '@/services/TicketService';
 import Pop from '@/utils/Pop';
-import { computed, onMounted } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
 
 
 onMounted(() => {
     getSelectedEvent()
     getTicketsForEvent()
+    getComments()
 })
 const event = computed(() => AppState.selectedEvent)
 const tickets = computed(() => AppState.tickets)
+const comments = computed(() => AppState.comments)
 
 const route = useRoute();
 
@@ -60,6 +64,29 @@ async function unAttendEvent() {
     catch (error) {
         Pop.error(error);
     }
+}
+
+async function getComments() {
+    try {
+        const eventId = route.params.id;
+        await eventService.getComments(eventId)
+    }
+    catch (error) {
+        Pop.error(error);
+    }
+}
+
+const commentData = ref({
+    body: ''
+});
+
+
+async function postComment() {
+    const eventId = route.params.id;
+    await commentService.postComment(eventId, commentData.value.body);
+    commentData.value = {
+        body: ''
+    };
 }
 </script>
 
@@ -114,9 +141,8 @@ async function unAttendEvent() {
                                 class="bg-danger text-white text-center p-2 rounded w-100">
                                 SOLD OUT
                             </div>
-                            <div v-if="AppState.account == null"
-                                class="text-center rounded text-white p-2 w-100 bg-primary">
-                                Please Log In
+                            <div v-if="AppState?.account == null" class="text-center rounded text-white p-2">
+                                <Login />
                             </div>
                         </div>
                         <div class="text-end mt-0 p-2">
@@ -144,19 +170,51 @@ async function unAttendEvent() {
                 <div class="row justify-content-between">
                     <section class="col-md-6">
                         <p class="fw-bold">Comments:</p>
+                        <div class="rounded p-3 commentSection mb-3">
+                            <h6 class="mb-3">Leave A Comment</h6>
+                            <form @submit.prevent="postComment">
+                                <textarea v-model="commentData.body" name="body" id="body" class="w-100 rounded"
+                                    rows="3"></textarea>
+                                <div class="text-end mt-2">
+                                    <button class="btn btn-success p-1 w-25">Submit</button>
+                                </div>
+                            </form>
+                        </div>
+                        <div v-if="comments?.length != 0" class=" rounded p-3" id="attendeesDiv">
+                            <div class=" mb-1 rounded p-2 " v-for="comment in comments" v-bind:key="comment?.id">
+                                <div class="d-flex align-items-center rounded m-2 p-4 shadow-lg bg-dark"
+                                    id="commentSection">
+                                    <div class="">
+                                        <img id="commentImg" :src="comment?.creator.picture" alt="">
+                                    </div>
+                                    <div>
+                                        <p class="fw-bold ms-3">{{ comment?.creator.name }}</p>
+                                        <p class="ms-3 mt-2 fs-6">
+                                            {{ comment?.body }}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div v-else class=" fw-bold">
+                            <p>No Comments</p>
+                        </div>
                     </section>
                     <section class="col-md-6">
                         <p class="fw-bold">Attendees:</p>
-                        <div class=" rounded p-3" id="attendeesDiv">
+                        <div v-if="tickets.length != 0" class=" rounded p-3" id="attendeesDiv">
                             <div class="d-flex mb-1 rounded p-2  align-items-center" v-for="ticket in tickets"
-                                v-bind:key="ticket.accountId">
-                                <img id="profileImg" :src="ticket.profile.picture" alt="">
+                                v-bind:key="ticket?.accountId">
+                                <img id="profileImg" :src="ticket?.profile.picture" alt="">
                                 <div>
                                     <p class="ms-3 mt-2 fs-6">
-                                        {{ ticket.profile.name }}
+                                        {{ ticket?.profile.name }}
                                     </p>
                                 </div>
                             </div>
+                        </div>
+                        <div v-else class=" fw-bold">
+                            <p>No One Currently Attending Event</p>
                         </div>
                     </section>
                 </div>
@@ -170,6 +228,13 @@ async function unAttendEvent() {
 
 
 <style lang="scss" scoped>
+.commentSection {
+    background-color: #42474d;
+
+}
+
+
+
 #buttonDiv {
     background-color: #42474d;
 }
@@ -180,7 +245,7 @@ async function unAttendEvent() {
 }
 
 #attendeesDiv {
-    max-height: 300px;
+    max-height: 550px;
     overflow-y: scroll;
     scrollbar-width: none;
     -ms-overflow-style: none;
@@ -193,6 +258,12 @@ async function unAttendEvent() {
 
 
 #profileImg {
+    border-radius: 50%;
+    height: 50px;
+    aspect-ratio: 1/1;
+}
+
+#commentImg {
     border-radius: 50%;
     height: 50px;
     aspect-ratio: 1/1;

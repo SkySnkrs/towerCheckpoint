@@ -2,8 +2,16 @@ import { logger } from "@/utils/Logger.js"
 import { api } from "./AxiosService.js"
 import { AppState } from "@/AppState.js"
 import { TowerEvent } from "@/models/TowerEvent.js"
+import { Comment } from "@/models/Comment.js"
 
 class EventService {
+    async getComments(eventId) {
+        const commentRaw = await api.get(`/api/events/${eventId}/comments`)
+        const commentData = commentRaw.data.map(comment => new Comment(comment))
+        AppState.comments = commentData
+        logger.log('[Comments]', AppState.comments)
+    }
+
     async getSelectedEvent(eventId) {
         AppState.selectedEvent = null
         const rawEvent = await api.get(`/api/events/${eventId}`)

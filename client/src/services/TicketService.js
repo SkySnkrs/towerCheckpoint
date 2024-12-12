@@ -6,8 +6,19 @@ import { AppState } from "@/AppState.js"
 class TicketService {
     async unAttendEvent(eventId) {
         const tickets = await api.get('/account/tickets')
-        const ticketPojo = tickets.data.map(ticketPojo => ticketPojo.accountId == AppState.account.id)
-        logger.log(ticketPojo)
+        logger.log(tickets)
+        const ticketPojo = tickets.data.filter(ticketPojo => ticketPojo.event.id == eventId)
+        logger.log('data', ticketPojo)
+        const ticketIndex = AppState.tickets.findIndex(t => t.event.id === eventId);
+        for (let i = 0; i < ticketPojo.length; i++) {
+            const ticket = ticketPojo[i];
+            const response = await api.delete(`/api/tickets/${ticket.id}`)
+            if (ticketIndex !== -1) {
+                AppState.tickets.splice(ticketIndex, 1);
+                logger.log('[Un Attend Event]', response.data)
+            }
+        }
+
 
     }
     async ticketsSold(eventId) {
