@@ -3,6 +3,8 @@ import { api } from "./AxiosService.js"
 import { AppState } from "@/AppState.js"
 import { TowerEvent } from "@/models/TowerEvent.js"
 import { Comment } from "@/models/Comment.js"
+import Pop from "@/utils/Pop.js"
+import { Modal } from "bootstrap"
 
 class EventService {
 
@@ -25,6 +27,9 @@ class EventService {
         logger.log(event.data)
         const rawEvent = new TowerEvent(event.data)
         AppState.events.push(rawEvent)
+        Pop.success(`Successfully Created Event!, ${event.data.name}`)
+        Modal.getInstance('#createEvent').hide()
+        return event.data
     }
 
     async getComments(eventId) {

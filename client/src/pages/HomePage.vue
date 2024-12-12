@@ -4,7 +4,9 @@ import EventCard from '@/components/EventCard.vue';
 import { eventService } from '@/services/EventService';
 import Pop from '@/utils/Pop';
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
+import { useRouter } from 'vue-router';
 
+const router = useRouter()
 
 const screenWidth = ref(window.innerWidth);
 
@@ -74,7 +76,8 @@ const editableFormData = ref({
 
 async function createEvent() {
   try {
-    await eventService.createEvent(editableFormData.value)
+    const event = await eventService.createEvent(editableFormData.value)
+    router.push({ name: 'EventPage', params: { id: event.id } })
     editableFormData.value = ({
       name: '',
       description: '',
@@ -183,7 +186,8 @@ const events = computed(() => AppState.events)
                   </select>
                   <select class="form-select me-2" v-model="editableFormData.startMinute" required>
                     <option disabled value="">Minute</option>
-                    <option v-for="minute in 60" :key="minute" :value="minute">{{ minute < 10 ? '0' + minute : minute
+                    <option value="00">00</option>
+                    <option v-for="minute in 59" :key="minute" :value="minute">{{ minute < 10 ? '0' + minute : minute
                         }}</option>
                   </select>
                   <select class="form-select" v-model="editableFormData.startPeriod" required>
