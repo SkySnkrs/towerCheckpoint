@@ -1,26 +1,55 @@
 <script setup>
 import { AppState } from '@/AppState';
-import { computed } from 'vue';
+import { eventService } from '@/services/EventService';
+import Pop from '@/utils/Pop';
+import { computed, onMounted } from 'vue';
+import { useRoute } from 'vue-router';
 
+
+onMounted(() => {
+    getSelectedEvent()
+})
 const event = computed(() => AppState.selectedEvent)
+
+
+const route = useRoute();
+
+async function getSelectedEvent() {
+    try {
+        const eventId = route.params.id;
+        await eventService.getSelectedEvent(eventId)
+    }
+    catch (error) {
+        Pop.error(error);
+    }
+}
 </script>
 
 
 <template>
-    <section class="container-fluid ">
+    <section v-if="event" class="container-fluid ">
         <div class="row justify-content-center rounded">
             <div id="photoContainer" class="rounded">
                 <div id="blurredBackground" :style="{ backgroundImage: `url(${event?.coverImg})` }"></div>
 
+                <div v-if="event?.isCanceled == true" class="bg-danger text-white text-center p-2 rounded"
+                    style="position: absolute; bottom: 10px; left: 10px; z-index: 1">
+                    CANCELLED
+                </div>
+                <div v-if="event?.capacity == event?.ticketCount" class="bg-danger text-white text-center p-2 rounded"
+                    style="position: absolute; bottom: 10px; left: 10px; z-index: 1">
+                    SOLD OUT
+                </div>
                 <img id="centerImage" class=" img-fluid" :src="event?.coverImg" :alt="event?.name">
+
             </div>
         </div>
     </section>
-    <section class="container" id="eventData">
+    <section v-if="event" class="container" id="eventData">
         <div class="row justify-content-center">
             <div class="col-10">
                 <div class="row d-flex justify-content-between">
-                    <div class="col-8">
+                    <div class="col-md-8 col-7">
                         <div class="d-flex align-self-center">
                             <h3>{{ event?.name }}</h3>
                             <p class="ms-3"><i class="mdi fs-3" :class="event?.EventCategory"></i></p>
@@ -30,16 +59,25 @@ const event = computed(() => AppState.selectedEvent)
                         </div>
 
                     </div>
-                    <div class="col-3">
+                    <div class="col-md-3 col-5">
                         <div class="p-3 text-center rounded" id="buttonDiv">
                             <h6>Interested In Going?</h6>
                             <p>grab a ticket</p>
-                            <div class="text-center">
+                            <div v-if="event?.isCanceled != true" class="text-center">
                                 <button class="btn btn-primary w-75">Attend</button>
                             </div>
+                            <div v-else class="bg-danger text-white text-center p-2 rounded">
+                                CANCELLED
+                            </div>
+                            <div v-if="event?.capacity == event?.ticketCount"
+                                class="bg-danger text-white text-center p-2 rounded">
+                                SOLD OUT
+                            </div>
                         </div>
-                        <div class="text-end mt-2 p-2">
-                            Spots Left
+                        <div class="text-end mt-0 p-2">
+                            <span>
+                                {{ event?.ticketsLeft }}
+                            </span> Spots Left
                         </div>
                     </div>
                 </div>
@@ -56,6 +94,9 @@ const event = computed(() => AppState.selectedEvent)
                 </div>
             </div>
         </div>
+    </section>
+    <section v-else class="text-center mt-5 text-white ">
+        <h3>Loading Event.... <i class="mdi mdi-loading mdi-spin"></i></h3>
     </section>
 </template>
 

@@ -4,6 +4,14 @@ import { AppState } from "@/AppState.js"
 import { TowerEvent } from "@/models/TowerEvent.js"
 
 class EventService {
+    async getSelectedEvent(eventId) {
+        AppState.selectedEvent = null
+        const rawEvent = await api.get(`/api/events/${eventId}`)
+        const event = new TowerEvent(rawEvent.data)
+        AppState.selectedEvent = event
+        logger.log('[Get Selected Event]', rawEvent)
+    }
+
     async getEventPage(id) {
         const response = await api.get(`/api/events/${id}`)
         const event = new TowerEvent(response.data)

@@ -29,4 +29,8 @@ export class TowerEvent {
 
         return iconMapping[this.type] || 'mdi-help-circle';
     }
+
+    get ticketsLeft() {
+        return this.capacity - this.ticketCount
+    }
 }

@@ -11,7 +11,6 @@ defineProps({
 async function getEventPage(id) {
     try {
         await eventService.getEventPage(id)
-
     }
     catch (error) {
         Pop.error(error);
@@ -41,7 +40,7 @@ async function getEventPage(id) {
                 <div v-if="eventProp?.capacity == eventProp?.ticketCount"
                     class="bg-danger text-white text-center p-2 rounded"
                     style="position: absolute; bottom: 10px; left: 10px;">
-                    CANCELLED
+                    SOLD OUT
                 </div>
             </div>
             <div class="mt-3 text-start cardColor align-self-center">
