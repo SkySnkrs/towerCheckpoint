@@ -8,6 +8,8 @@ import { Modal } from "bootstrap"
 
 class EventService {
     async cancelEvent(eventId) {
+        const confirm = await Pop.confirm('Are You Sure You Want To Cancel The Event?')
+        if (!confirm) { return }
         AppState.selectedEvent = null
         const response = await api.delete(`/api/events/${eventId}`)
         const event = new TowerEvent(response.data)
