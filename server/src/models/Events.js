@@ -12,7 +12,7 @@ export const EventsSchema = new Schema(
         isCanceled: { type: Boolean, required: true, default: false },
         type: {
             type: String,
-            enum: [{ name: 'concert', icon: 'mdi mdi-guitar-acoustic' }, { name: 'convention', icon: 'mdi mdi-account-group' }, { name: 'sport', icon: 'mdi mdi-football-helmet' }, { name: 'digital', icon: 'mdi mdi-desktop-classic' }, { name: 'N/A', icon: '' }],
+            enum: ['concert', 'convention', 'sport', 'digital', 'N/A',],
             default: 'N/A'
         }
     },
