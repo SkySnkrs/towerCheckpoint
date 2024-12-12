@@ -2,7 +2,6 @@
 import { AppState } from '@/AppState';
 import EventCard from '@/components/EventCard.vue';
 import { eventService } from '@/services/EventService';
-import { logger } from '@/utils/Logger';
 import Pop from '@/utils/Pop';
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
 
@@ -71,14 +70,28 @@ const editableFormData = ref({
   startMinute: '',
   startPeriod: ''
 });
-async function validateAndSubmit() {
-  const form = this.$refs.eventForm;
 
-  if (!form || !form.checkValidity()) {
-    form.reportValidity();
-    return;
+
+async function createEvent() {
+  try {
+    await eventService.createEvent(editableFormData.value)
+    editableFormData.value = ({
+      name: '',
+      description: '',
+      coverImg: '',
+      location: '',
+      capacity: null,
+      startDate: '',
+      type: '',
+      startHour: '',
+      startMinute: '',
+      startPeriod: ''
+    });
   }
-  logger.log('Submitted Form', editableFormData.value)
+  catch (error) {
+    Pop.error(error);
+  }
+
 }
 const events = computed(() => AppState.events)
 
@@ -132,10 +145,10 @@ const events = computed(() => AppState.events)
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body bg-gray">
-          <form ref="eventForm" @submit.prevent="validateAndSubmit">
+          <form ref="eventForm" @submit.prevent="createEvent">
             <div class="row mb-3">
               <div class="col-md-6">
-                <label for="eventName" class="form-label">Name</label>
+                <label for="eventName" class="form-label">Name (Min: 3, Max: 50)</label>
                 <input id="eventName" class="form-control" type="text" required minlength="3" maxlength="50"
                   v-model="editableFormData.name">
               </div>
@@ -150,7 +163,7 @@ const events = computed(() => AppState.events)
                 <input id="eventLocation" class="form-control" type="text" required v-model="editableFormData.location">
               </div>
               <div class="col-md-6">
-                <label for="eventCapacity" class="form-label">Capacity</label>
+                <label for="eventCapacity" class="form-label">Capacity (Min: 1, Max: 5000)</label>
                 <input id="eventCapacity" class="form-control" type="number" required min="1" max="5000"
                   v-model.number="editableFormData.capacity">
               </div>
@@ -193,7 +206,7 @@ const events = computed(() => AppState.events)
               </div>
             </div>
             <div class="mb-3">
-              <label for="eventDescription" class="form-label">Description</label>
+              <label for="eventDescription" class="form-label">Description (Min: 15, Max: 1000)</label>
               <textarea id="eventDescription" class="form-control" required minlength="15" maxlength="1000"
                 v-model="editableFormData.description"></textarea>
             </div>

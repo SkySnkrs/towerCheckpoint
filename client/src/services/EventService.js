@@ -5,6 +5,28 @@ import { TowerEvent } from "@/models/TowerEvent.js"
 import { Comment } from "@/models/Comment.js"
 
 class EventService {
+
+    async createEvent(eventData) {
+        const payload = {
+            name: eventData.name,
+            coverImg: eventData.coverImg,
+            location: eventData.location,
+            capacity: eventData.capacity,
+            startDate: `${eventData.startDate}T${formatTime(eventData.startHour, eventData.startMinute, eventData.startPeriod)}`,
+            type: eventData.type,
+            description: eventData.description
+        };
+        function formatTime(hour, minute, period) {
+            let formattedHour = period === "PM" && hour < 12 ? hour + 12 : hour;
+            if (period === "AM" && hour === 12) formattedHour = 0;
+            return `${formattedHour.toString().padStart(2, "0")}:${minute.toString().padStart(2, "0")}:00`;
+        }
+        const event = await api.post('/api/events', payload)
+        logger.log(event.data)
+        const rawEvent = new TowerEvent(event.data)
+        AppState.events.push(rawEvent)
+    }
+
     async getComments(eventId) {
         const commentRaw = await api.get(`/api/events/${eventId}/comments`)
         const commentData = commentRaw.data.map(comment => new Comment(comment))
