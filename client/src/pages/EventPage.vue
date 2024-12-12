@@ -100,7 +100,15 @@ async function deleteComment(commentId) {
     }
 }
 
-
+async function cancelEvent() {
+    try {
+        const eventId = route.params.id;
+        await eventService.cancelEvent(eventId)
+    }
+    catch (error) {
+        Pop.error(error);
+    }
+}
 
 const event = computed(() => AppState.selectedEvent)
 const tickets = computed(() => AppState.tickets)
@@ -125,6 +133,7 @@ const comments = computed(() => AppState.comments)
                 <img id="centerImage" class=" img-fluid" :src="event?.coverImg" :alt="event?.name">
 
             </div>
+
         </div>
     </section>
     <section v-if="event" class="container" id="eventData">
@@ -166,6 +175,10 @@ const comments = computed(() => AppState.comments)
                             <span>
                                 {{ event?.ticketsLeft }}
                             </span> Spots Left
+                        </div>
+                        <div v-if="event?.creatorId == AppState.account.id" @click="cancelEvent"
+                            class="w-100 text-center mt-3">
+                            <button class="btn btn-danger">Cancel Event</button>
                         </div>
                     </div>
                 </div>

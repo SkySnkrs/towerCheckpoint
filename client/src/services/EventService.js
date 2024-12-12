@@ -7,6 +7,13 @@ import Pop from "@/utils/Pop.js"
 import { Modal } from "bootstrap"
 
 class EventService {
+    async cancelEvent(eventId) {
+        AppState.selectedEvent = null
+        const response = await api.delete(`/api/events/${eventId}`)
+        const event = new TowerEvent(response.data)
+        AppState.selectedEvent = event
+        logger.log('[Cancel Event]', response.data)
+    }
 
     async createEvent(eventData) {
         const payload = {
