@@ -16,7 +16,7 @@ export class TowerEvent {
     }
 
     get EventDate() {
-        return this.startDate.toLocaleString('en-us', { month: "short", day: "2-digit" })
+        return this.startDate.toLocaleString('en-us', { month: "short", day: "2-digit", hour: '2-digit', minute: '2-digit' })
     }
 
     get EventCategory() {

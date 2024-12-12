@@ -23,8 +23,8 @@ const routes = [
     beforeEnter: authGuard
   },
   {
-    path: '/event',
-    name: 'Event',
+    path: '/event/:id',
+    name: 'EventPage',
     component: loadPage('EventPage')
   }
 ]
@@ -33,5 +33,5 @@ export const router = createRouter({
   linkActiveClass: 'router-link-active',
   linkExactActiveClass: 'router-link-exact-active',
   history: createWebHashHistory(),
-  routes
+  routes,
 })
