@@ -14,9 +14,6 @@ onMounted(() => {
     getTicketsForEvent()
     getComments()
 })
-const event = computed(() => AppState.selectedEvent)
-const tickets = computed(() => AppState.tickets)
-const comments = computed(() => AppState.comments)
 
 const route = useRoute();
 
@@ -82,12 +79,32 @@ const commentData = ref({
 
 
 async function postComment() {
-    const eventId = route.params.id;
-    await commentService.postComment(eventId, commentData.value.body);
-    commentData.value = {
-        body: ''
-    };
+    try {
+        const eventId = route.params.id;
+        await commentService.postComment(eventId, commentData.value.body);
+        commentData.value = {
+            body: ''
+        };
+    }
+    catch (error) {
+        Pop.error(error);
+    }
 }
+
+async function deleteComment(commentId) {
+    try {
+        await commentService.deleteComment(commentId)
+    }
+    catch (error) {
+        Pop.error(error);
+    }
+}
+
+
+
+const event = computed(() => AppState.selectedEvent)
+const tickets = computed(() => AppState.tickets)
+const comments = computed(() => AppState.comments)
 </script>
 
 
@@ -173,14 +190,14 @@ async function postComment() {
                         <div class="rounded p-3 commentSection mb-3">
                             <h6 class="mb-3">Leave A Comment</h6>
                             <form @submit.prevent="postComment">
-                                <textarea v-model="commentData.body" name="body" id="body" class="w-100 rounded"
-                                    rows="3"></textarea>
+                                <textarea minlength="1" maxlength="500" required v-model="commentData.body" name="body"
+                                    id="body" class="w-100 rounded" rows="3"></textarea>
                                 <div class="text-end mt-2">
                                     <button class="btn btn-success p-1 w-25">Submit</button>
                                 </div>
                             </form>
                         </div>
-                        <div v-if="comments?.length != 0" class=" rounded p-3" id="attendeesDiv">
+                        <div v-if="comments?.length != 0" class=" rounded " id="attendeesDiv">
                             <div class=" mb-1 rounded p-2 " v-for="comment in comments" v-bind:key="comment?.id">
                                 <div class="d-flex align-items-center rounded m-2 p-4 shadow-lg bg-dark"
                                     id="commentSection">
@@ -188,11 +205,17 @@ async function postComment() {
                                         <img id="commentImg" :src="comment?.creator.picture" alt="">
                                     </div>
                                     <div>
-                                        <p class="fw-bold ms-3">{{ comment?.creator.name }}</p>
+                                        <div class="d-flex">
+                                            <p class="fw-bold ms-3">{{ comment?.creator.name }}</p>
+                                        </div>
                                         <p class="ms-3 mt-2 fs-6">
                                             {{ comment?.body }}
                                         </p>
                                     </div>
+                                </div>
+                                <div v-if="comment?.creatorId == AppState.account.id" class="text-end mt-3">
+                                    <button @click="deleteComment(comment?.id)"
+                                        class="btn btn-danger rounded p-2 me-2">Delete Comment</button>
                                 </div>
                             </div>
                         </div>

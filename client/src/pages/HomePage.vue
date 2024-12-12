@@ -2,6 +2,7 @@
 import { AppState } from '@/AppState';
 import EventCard from '@/components/EventCard.vue';
 import { eventService } from '@/services/EventService';
+import { logger } from '@/utils/Logger';
 import Pop from '@/utils/Pop';
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
 
@@ -58,6 +59,27 @@ async function selectCategory(category) {
   }
 }
 
+const editableFormData = ref({
+  name: '',
+  description: '',
+  coverImg: '',
+  location: '',
+  capacity: null,
+  startDate: '',
+  type: '',
+  startHour: '',
+  startMinute: '',
+  startPeriod: ''
+});
+async function validateAndSubmit() {
+  const form = this.$refs.eventForm;
+
+  if (!form || !form.checkValidity()) {
+    form.reportValidity();
+    return;
+  }
+  logger.log('Submitted Form', editableFormData.value)
+}
 const events = computed(() => AppState.events)
 
 </script>
@@ -93,13 +115,98 @@ const events = computed(() => AppState.events)
             <h5 class="card-title ">Start An Event To Invite Your Friends!</h5>
             <p class="card-text">Create your own tower event, invite your friends, and the whole tower community!</p>
             <div class="text-end mt-3">
-              <button class="btn btn-success">Create Event</button>
+              <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createEvent">Create
+                Event</button>
             </div>
           </div>
         </div>
       </div>
     </div>
   </section>
+
+  <div class="modal modal-xl fade" id="createEvent" tabindex="-1" aria-labelledby="EventModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content bg-dark text-light">
+        <div class="modal-header bg-dark text-light">
+          <h5 class="modal-title" id="EventModalLabel">Create An Event</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body bg-gray">
+          <form ref="eventForm" @submit.prevent="validateAndSubmit">
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label for="eventName" class="form-label">Name</label>
+                <input id="eventName" class="form-control" type="text" required minlength="3" maxlength="50"
+                  v-model="editableFormData.name">
+              </div>
+              <div class="col-md-6">
+                <label for="eventCoverImg" class="form-label">Cover Image URL</label>
+                <input id="eventCoverImg" class="form-control" type="text" required v-model="editableFormData.coverImg">
+              </div>
+            </div>
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label for="eventLocation" class="form-label">Location</label>
+                <input id="eventLocation" class="form-control" type="text" required v-model="editableFormData.location">
+              </div>
+              <div class="col-md-6">
+                <label for="eventCapacity" class="form-label">Capacity</label>
+                <input id="eventCapacity" class="form-control" type="number" required min="1" max="5000"
+                  v-model.number="editableFormData.capacity">
+              </div>
+            </div>
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label for="eventStartDate" class="form-label">Start Date</label>
+                <input id="eventStartDate" class="form-control" type="date" required
+                  v-model="editableFormData.startDate">
+              </div>
+              <div class="col-md-6">
+                <label for="eventStartTime" class="form-label">Start Time</label>
+                <div class="d-flex">
+                  <select class="form-select me-2" v-model="editableFormData.startHour" required>
+                    <option disabled value="">Hour</option>
+                    <option v-for="hour in 12" :key="hour" :value="hour">{{ hour }}</option>
+                  </select>
+                  <select class="form-select me-2" v-model="editableFormData.startMinute" required>
+                    <option disabled value="">Minute</option>
+                    <option v-for="minute in 60" :key="minute" :value="minute">{{ minute < 10 ? '0' + minute : minute
+                        }}</option>
+                  </select>
+                  <select class="form-select" v-model="editableFormData.startPeriod" required>
+                    <option value="AM">AM</option>
+                    <option value="PM">PM</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label for="eventType" class="form-label">Type</label>
+                <select id="eventType" class="form-select" required v-model="editableFormData.type">
+                  <option value="" disabled>Select type</option>
+                  <option value="concert">Concert</option>
+                  <option value="convention">Convention</option>
+                  <option value="sport">Sport</option>
+                  <option value="digital">Digital</option>
+                </select>
+              </div>
+            </div>
+            <div class="mb-3">
+              <label for="eventDescription" class="form-label">Description</label>
+              <textarea id="eventDescription" class="form-control" required minlength="15" maxlength="1000"
+                v-model="editableFormData.description"></textarea>
+            </div>
+            <div class="modal-footer bg-dark text-light">
+              <button type="button" class="btn btn-light text-dark" data-bs-dismiss="modal">Close</button>
+              <button type="submit" class="btn btn-success">Save changes</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
 
   <section class="container event-body" style="">
     <div v-if="checkWidth" class="p-3">
