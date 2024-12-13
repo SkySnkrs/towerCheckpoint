@@ -20,7 +20,7 @@ const route = useRoute();
 const isUserAttending = computed(() => {
     const userAccountId = AppState.account.id;
 
-    return AppState.tickets.some(ticket => ticket.accountId === userAccountId);
+    return AppState.tickets.find(ticket => ticket.accountId === userAccountId);
 })
 
 
@@ -55,8 +55,7 @@ async function getTicketsForEvent() {
 
 async function unAttendEvent() {
     try {
-        const eventId = route.params.id;
-        await ticketService.unAttendEvent(eventId)
+        await ticketService.unAttendEvent(isUserAttending.value.id)
     }
     catch (error) {
         Pop.error(error);
@@ -155,17 +154,17 @@ const comments = computed(() => AppState.comments)
                             <h6>Interested In Going?</h6>
                             <p>grab a ticket</p>
                             <div v-if="event?.isCanceled != true && AppState.account != null" class="text-center">
-                                <button v-if="!isUserAttending" @click="attendEvent()"
+                                <div v-if="event?.isCanceled == true"
+                                    class="bg-danger text-white text-center p-2 rounded w-100">
+                                    CANCELLED
+                                </div>
+                                <div v-else-if="event?.capacity == event?.ticketCount"
+                                    class="bg-danger text-white text-center p-2 rounded w-100">
+                                    SOLD OUT
+                                </div>
+                                <button v-else-if="!isUserAttending" @click="attendEvent()"
                                     class="btn btn-primary w-100">Attend</button>
                                 <button v-else @click="unAttendEvent()" class="btn btn-danger w-100">Unattend</button>
-                            </div>
-                            <div v-else-if="event?.isCanceled == true"
-                                class="bg-danger text-white text-center p-2 rounded w-100">
-                                CANCELLED
-                            </div>
-                            <div v-if="event?.capacity == event?.ticketCount"
-                                class="bg-danger text-white text-center p-2 rounded w-100">
-                                SOLD OUT
                             </div>
                             <div v-if="AppState?.account == null" class="text-center rounded text-white p-2">
                                 <Login />

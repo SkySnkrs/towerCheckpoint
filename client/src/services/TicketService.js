@@ -13,23 +13,17 @@ class TicketService {
         logger.log("[My Tickets]", AppState.tickets)
     }
 
-    async unAttendEvent(eventId) {
-        const tickets = await api.get('/account/tickets')
-        logger.log(tickets)
-        const ticketPojo = tickets.data.filter(ticketPojo => ticketPojo.event.id == eventId)
-        logger.log('data', ticketPojo)
-        const ticketIndex = AppState.tickets.findIndex(t => t.event.id === eventId);
-        for (let i = 0; i < ticketPojo.length; i++) {
-            const ticket = ticketPojo[i];
-            const response = await api.delete(`/api/tickets/${ticket.id}`)
-            if (ticketIndex !== -1) {
-                AppState.tickets.splice(ticketIndex, 1);
-                logger.log('[Un Attend Event]', response.data)
-            }
+    async unAttendEvent(ticketId) {
+        const response = await api.delete(`/api/tickets/${ticketId}`)
+        const ticketIndex = AppState.tickets.findIndex(ticket => ticket.id === ticketId);
+        if (ticketIndex !== -1) {
+            AppState.tickets.splice(ticketIndex, 1);
+            logger.log('[Un Attend Event]', response.data)
         }
-
-
     }
+
+
+
     async ticketsSold(eventId) {
         const ticketData = await api.get(`/api/events/${eventId}/tickets`)
         const ticketPojo = ticketData.data.map(ticketPojo => new Ticket(ticketPojo))
