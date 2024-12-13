@@ -402,12 +402,17 @@ section>div {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-@media screen and (max-width: 992px) {
-  .card-event-categories {
-    margin-top: 1em;
+@media screen and (max-width: 1030px) {
+  .event-body {
+    margin-top: 30rem;
 
   }
+
+
+
 }
+
+
 
 @media screen and (max-width: 768px) {
   .event-body {
