@@ -4,6 +4,15 @@ import { Ticket } from "@/models/Ticket.js"
 import { AppState } from "@/AppState.js"
 
 class TicketService {
+
+    async getMyTickets() {
+        AppState.tickets = []
+        const ticketData = await api.get('/account/tickets')
+        const ticketPojo = await ticketData.data.map(ticket => new Ticket(ticket))
+        AppState.tickets = ticketPojo
+        logger.log("[My Tickets]", AppState.tickets)
+    }
+
     async unAttendEvent(eventId) {
         const tickets = await api.get('/account/tickets')
         logger.log(tickets)

@@ -7,6 +7,15 @@ import Pop from "@/utils/Pop.js"
 import { Modal } from "bootstrap"
 
 class EventService {
+
+    async getMyEvents() {
+        AppState.events = []
+        const response = await this.getEvents()
+        const allEvents = response.data.map(event => new TowerEvent(event))
+        AppState.events = allEvents.filter(event => event.creatorId === AppState.account.id)
+        logger.log('Get My Events', AppState.events)
+    }
+
     async cancelEvent(eventId) {
         const confirm = await Pop.confirm('Are You Sure You Want To Cancel The Event?')
         if (!confirm) { return }
@@ -78,6 +87,7 @@ class EventService {
         const eventData = response.data.map(event => new TowerEvent(event))
         AppState.events = eventData
         logger.log('[Get Events]', AppState.events)
+        return response
     }
 
 }
