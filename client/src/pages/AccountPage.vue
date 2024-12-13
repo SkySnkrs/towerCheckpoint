@@ -46,7 +46,7 @@ const account = computed(() => AppState.account)
   <section class="container">
     <div class="d-flex accountSection align-items-center" v-if="account">
       <img :src="account?.picture" alt="" />
-      <div class="ms-3">
+      <div id="accountDescription" class="ms-3">
         <p>{{ account?.name }}</p>
         <p>Total Events: <span>{{ events?.length }}</span> , Total Tickets: <span>{{ tickets?.length }}</span></p>
       </div>
@@ -89,5 +89,16 @@ section {
 .accountSection {
   margin-left: 6em;
   margin-top: 3em;
+}
+
+@media screen and (max-width: 500px) {
+  #accountDescription {
+    margin: none;
+  }
+
+  .accountSection {
+    margin-left: 2em;
+    margin-top: 1em;
+  }
 }
 </style>
