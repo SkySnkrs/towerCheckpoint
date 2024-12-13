@@ -58,8 +58,8 @@ const account = computed(() => AppState.account)
   <section class="container mt-5">
     <div class="row">
       <h3>Your Tickets:</h3>
-      <div v-if="AppState.tickets.length == 0">
-        <h2 class="mb-3 mt-2 p-3 ms-3">You Are Not Attending Any Events</h2>
+      <div v-if="tickets.length == 0">
+        <h2 class="mb-3 mt-2 p-3 ms-3">Loading... <i class="mdi mdi-loading mdi-spin"></i></h2>
       </div>
       <div v-else v-for="ticket in tickets" v-bind:key="ticket?.eventId" class="col-lg-4 col-sm-6 col-12 mt-4 mb-2">
         <TicketCard :ticketProp="ticket" />
